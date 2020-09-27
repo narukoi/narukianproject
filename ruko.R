@@ -33,13 +33,16 @@ carrier_fun <- function(){
   if (orientation == 'horizontal') {
     carrier_positions <- data.frame(
       columns = change_pos,
-      rows = LETTERS[static_pos]
+      rows = static_pos
     )}
   else {
     carrier_positions <- data.frame(
       columns = static_pos,
-      rows = LETTERS[change_pos]
+      rows = change_pos
     )}
  return(carrier_positions)
 }
 carrier <- carrier_fun()
+
+board_1_5 <- board
+board_1_5[unique(carrier$rows),unique(carrier$columns)] <- "C"
