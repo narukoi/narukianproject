@@ -4,8 +4,9 @@ p_load(tidyverse)
 board <- data.frame(matrix("~", nrow = 10, ncol = 10))
 colnames(board) <- seq.int(1,10)
 rownames(board) <- LETTERS[seq.int(1,10)]
+board
 
-carrier <- function(){
+carrier_fun <- function(){
   #orientation determines the direction of a ship's placement
   orientation <- unlist(sample(c('horizontal','vertical'),1))
   
@@ -29,12 +30,16 @@ carrier <- function(){
   
   
   #now we will determine the final dataset for the carrier's position
-  carrier_positions <- data.frame(
-    columns = ifelse(
-      orientation == 'horizontal',
-      ,
-      
-      ))
- return(change_pos)
+  if (orientation == 'horizontal') {
+    carrier_positions <- data.frame(
+      columns = change_pos,
+      rows = LETTERS[static_pos]
+    )}
+  else {
+    carrier_positions <- data.frame(
+      columns = static_pos,
+      rows = LETTERS[change_pos]
+    )}
+ return(carrier_positions)
 }
-carrier()
+carrier <- carrier_fun()
