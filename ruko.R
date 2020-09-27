@@ -6,5 +6,6 @@ colnames(board) <- seq.int(1,10)
 rownames(board) <- LETTERS[seq.int(1,10)]
 
 carrier <- function(){
-  
+  orientation <- unlist(sample(c('h','v'),1))
+  start_change <- unlist(sample(seq.int(1,10),1))
 }
