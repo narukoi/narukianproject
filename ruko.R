@@ -6,18 +6,35 @@ colnames(board) <- seq.int(1,10)
 rownames(board) <- LETTERS[seq.int(1,10)]
 
 carrier <- function(){
-  orientation <- unlist(sample(c('h','v'),1))
+  #orientation determines the direction of a ship's placement
+  orientation <- unlist(sample(c('horizontal','vertical'),1))
+  
+  
+  #change_pos will be a vector of 5 numbers designating a ship's position along one axis
+  #if orientation is horizontal, change_pos = columns
+  #if orientation is vertical, change_pos = rows
   start_change <- unlist(sample(seq.int(1,10),1))
   change_pos <- c(seq.int(start_change,start_change + 4))
   
+  
+  #we will also ensure that no part of the ship goes off the board
+  #if a number in change_pos is over 10, we subtract 5 from that element
   for (i in seq(1,5))  {if (change_pos[i]>10) {
     change_pos[i] <- change_pos[i] - 5
   }}
   
-  # ifelse(
-  #   orientation == 'h',
-  #   ,
-  #   )
+  
+  #static_pos will be a single number denoting a ship's position along the other axis
+  static_pos <- unlist(sample(seq.int(1,10),1))
+  
+  
+  #now we will determine the final dataset for the carrier's position
+  carrier_positions <- data.frame(
+    columns = ifelse(
+      orientation == 'horizontal',
+      ,
+      
+      ))
  return(change_pos)
 }
 carrier()
