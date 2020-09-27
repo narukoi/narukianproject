@@ -44,5 +44,6 @@ carrier_fun <- function(){
 }
 carrier <- carrier_fun()
 
+#board 1/5: 1 board adding each ship progressively
 board_1_5 <- board
 board_1_5[unique(carrier$rows),unique(carrier$columns)] <- "C"
