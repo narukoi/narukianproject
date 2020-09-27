@@ -11,13 +11,13 @@ carrier <- function(){
   change_pos <- c(seq.int(start_change,start_change + 4))
   
   for (i in seq(1,5))  {if (change_pos[i]>10) {
-    change_pos[i] <- change_pos[i] - 10
+    change_pos[i] <- change_pos[i] - 5
   }}
   
-  ifelse(
-    orientation == 'h',
-    ,
-    )
-  return(change_pos)
+  # ifelse(
+  #   orientation == 'h',
+  #   ,
+  #   )
+ return(change_pos)
 }
 carrier()
