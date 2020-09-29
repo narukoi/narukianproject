@@ -32,13 +32,15 @@ carrier_fun <- function(){
   #now we will determine the final dataset for the carrier's position
   if (orientation == 'horizontal') {
     carrier_positions <- data.frame(
-      columns = change_pos,
-      rows = static_pos
+      column = change_pos,
+      row = static_pos,
+      combination = paste(LETTERS[static_pos],change_pos,sep = "")
     )}
   else {
     carrier_positions <- data.frame(
-      columns = static_pos,
-      rows = change_pos
+      column = static_pos,
+      row = change_pos,
+      combination = paste(LETTERS[change_pos],static_pos,sep = "")
     )}
  return(carrier_positions)
 }
@@ -79,20 +81,51 @@ battleship_fun <- function(carrier_df) {
   #now we will determine the final dataset for the carrier's position
   if (orientation == 'horizontal') {
     battleship_positions <- data.frame(
-      columns = change_pos,
-      rows = static_pos
+      column = change_pos,
+      row = static_pos,
+      combination = paste(LETTERS[static_pos],change_pos,sep = "")
     )}
   else {
     battleship_positions <- data.frame(
-      columns = static_pos,
-      rows = change_pos
+      column = static_pos,
+      row = change_pos,
+      combination = paste(LETTERS[change_pos],static_pos,sep = "")
     )}
   
   return(battleship_positions)
   
 }
-battleship_fun()
+battleship <- battleship_fun()
 
-if () {
+
+#How to determine if a position is invalid?
+#check to see if for any particular point in battleship, does that point exist in carrier?
+#perhaps use df to create a region that ships cannot be a part of?
+battleship
+carrier
+
+carrier_col_inclusive <- seq(min(carrier$column) - 1, max(carrier$column) + 1)
+carrier_col_exclusive <- seq(min(carrier$column),max(carrier$column))
+carrier_row_inclusive <- seq(min(carrier$row) - 1, max(carrier$row) + 1)
+carrier_row_exclusive <- seq(min(carrier$row),max(carrier$row))
+
+any(
+  (battleship$column %in% carrier_col_inclusive) & 
+    (battleship$row %in% carrier_row_exclusive)
+  )|any(
+    (battleship$column %in% carrier_col_exclusive) &
+      (battleship$row %in% carrier_row_inclusive)
+    )
+
+
+if (any(
+  (battleship$column %in% carrier_col_inclusive) & 
+  (battleship$row %in% carrier_row_exclusive)
+  )|any(
+    (battleship$column %in% carrier_col_exclusive) &
+    (battleship$row %in% carrier_row_inclusive)
+    )) {
+  battleship <- battleship_fun()
   
 }
+battleship
