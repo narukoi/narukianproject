@@ -48,13 +48,13 @@ carrier <- carrier_fun()
 
 #board 1/5: 1 board adding each ship progressively
 board_1_5 <- board
-board_1_5[unique(carrier$rows),unique(carrier$columns)] <- "C"
+board_1_5[unique(carrier$row),unique(carrier$column)] <- "C"
 
 
 
 ### BATTLESHIP FUNCTION
-battleship_fun <- function(carrier_df) {
-  seed <- sample(seq.int(1,1000))
+battleship_fun <- function(x = sample(seq(1,1000))) {
+  seed <- sample(x)
   set.seed(seed)
   #orientation determines the direction of a ship's placement
   orientation <- unlist(sample(c('horizontal','vertical'),1))
@@ -97,10 +97,7 @@ battleship_fun <- function(carrier_df) {
 }
 battleship <- battleship_fun()
 
-
-#How to determine if a position is invalid?
-#check to see if for any particular point in battleship, does that point exist in carrier?
-#perhaps use df to create a region that ships cannot be a part of?
+#Placement test will return TRUE if invalid position, and FALSE if the position is ok
 battleship
 carrier
 
@@ -109,23 +106,30 @@ carrier_col_exclusive <- seq(min(carrier$column),max(carrier$column))
 carrier_row_inclusive <- seq(min(carrier$row) - 1, max(carrier$row) + 1)
 carrier_row_exclusive <- seq(min(carrier$row),max(carrier$row))
 
-any(
+placement_test <- any((
   (battleship$column %in% carrier_col_inclusive) & 
     (battleship$row %in% carrier_row_exclusive)
-  )|any(
+  )|(
     (battleship$column %in% carrier_col_exclusive) &
       (battleship$row %in% carrier_row_inclusive)
-    )
+    ))
+placement_test
 
-
-if (any(
+#while statement remakes the object battleship until there's an appropriate position
+#check by using not to look for an invalid position
+#STILL NOT WORKING
+while (any((
   (battleship$column %in% carrier_col_inclusive) & 
   (battleship$row %in% carrier_row_exclusive)
-  )|any(
-    (battleship$column %in% carrier_col_exclusive) &
-    (battleship$row %in% carrier_row_inclusive)
-    )) {
-  battleship <- battleship_fun()
-  
+)|
+  (battleship$column %in% carrier_col_exclusive) &
+  (battleship$row %in% carrier_row_inclusive)
+)) {
+  battleship <- battleship_fun(sample(seq(1,1000)))
 }
 battleship
+carrier
+#Now what? Put the new ship on the original board
+board_2_5 <- board_1_5
+board_2_5[unique(battleship$row),unique(battleship$column)] <- "B"
+
