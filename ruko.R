@@ -133,3 +133,63 @@ carrier
 board_2_5 <- board_1_5
 board_2_5[unique(battleship$row),unique(battleship$column)] <- "B"
 
+sub_fun <- function(x = sample(seq(1,1000))) {
+  seed <- sample(x)
+  set.seed(seed)
+  #orientation determines the direction of a ship's placement
+  orientation <- unlist(sample(c('horizontal','vertical'),1))
+  
+  
+  #change_pos will be a vector of 5 numbers designating a ship's position along one axis
+  #if orientation is horizontal, change_pos = columns
+  #if orientation is vertical, change_pos = rows
+  start_change <- unlist(sample(seq.int(1,10),1))
+  change_pos <- c(seq.int(start_change,start_change + 2))
+  
+  
+  #we will also ensure that no part of the ship goes off the board
+  #if a number in change_pos is over 10, we subtract 5 from that element
+  for (i in seq(1,3))  {if (change_pos[i]>10) {
+    change_pos[i] <- change_pos[i] - 2
+  }}
+  
+  
+  #static_pos will be a single number denoting a ship's position along the other axis
+  static_pos <- unlist(sample(seq.int(1,10),1))
+  
+  
+  #now we will determine the final dataset for the carrier's position
+  if (orientation == 'horizontal') {
+    sub_positions <- data.frame(
+      column = change_pos,
+      row = static_pos,
+      combination = paste(LETTERS[static_pos],change_pos,sep = "")
+    )}
+  else {
+    sub_positions <- data.frame(
+      column = static_pos,
+      row = change_pos,
+      combination = paste(LETTERS[change_pos],static_pos,sep = "")
+    )}
+  
+  return(sub_positions)
+  
+}
+submarine <- sub_fun()
+cruiser <- sub_fun()
+
+bs_col_inclusive <- seq(min(battleship$column) - 1, max(battleship$column) + 1)
+bs_col_exclusive <- seq(min(battleship$column),max(battleship$column))
+bs_row_inclusive <- seq(min(battleship$row) - 1, max(battleship$row) + 1)
+bs_row_exclusive <- seq(min(battleship$row),max(battleship$row))
+
+
+while (any((
+  (submarine$column %in% carrier_col_inclusive) & 
+  (submarine$row %in% carrier_row_exclusive)
+)|
+(battleship$column %in% carrier_col_exclusive) &
+(battleship$row %in% carrier_row_inclusive)
+)) {
+  battleship <- battleship_fun(sample(seq(1,1000)))
+}
