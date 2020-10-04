@@ -97,55 +97,33 @@ battleship_fun <- function(x = sample(1:1000)) {
 }
 battleship <- battleship_fun()
 
-#Placement test will return TRUE if invalid position, and FALSE if the position is ok
-battleship
-carrier
-
-carrier_col_inclusive <- seq(min(carrier$column) - 1, max(carrier$column) + 1)
-carrier_col_exclusive <- seq(min(carrier$column),max(carrier$column))
-carrier_row_inclusive <- seq(min(carrier$row) - 1, max(carrier$row) + 1)
-carrier_row_exclusive <- seq(min(carrier$row),max(carrier$row))
-
-placement_test <- any((
-  (battleship$column %in% carrier_col_inclusive) & 
-    (battleship$row %in% carrier_row_exclusive)
-  )|(
-    (battleship$column %in% carrier_col_exclusive) &
-      (battleship$row %in% carrier_row_inclusive)
-    ))
-placement_test
-
-#while statement remakes the object battleship until there's an appropriate position
-#check by using not to look for an invalid position
-#STILL NOT WORKING
-while (any((
-  (battleship$column %in% carrier_col_inclusive) & 
-  (battleship$row %in% carrier_row_exclusive)
-)|
-  (battleship$column %in% carrier_col_exclusive) &
-  (battleship$row %in% carrier_row_inclusive)
-)) {
-  battleship <- battleship_fun(sample(seq(1,1000)))
-}
-battleship
-carrier
-
-####TRIAL REPLACEMENT FOR CODE (100 - 131)######
 #Create carrier red zone where no other ships can be positioned
 red_zone <- function(ship_df) {
   ship_name <- deparse(substitute(ship_df))
-  eval(parse(text = paste(ship_name,"_inclusive <- expand.grid(column = (min(",ship_name,"$column) - 1):(max(",ship_name,"$column) + 1),row = (min(",ship_name,"$row) - 1):(max(",ship_name,"$row) + 1))",sep = "")))
-  eval(parse(text = paste(ship_name,"_null <- expand.grid(column = c(min(",ship_name,"_inclusive$column),max(",ship_name,"_inclusive$column)),row = c(min(",ship_name,"_inclusive$row),max(",ship_name,"_inclusive$row)))",sep = "")))
-  eval(parse(text = paste(ship_name,"_red <- anti_join(",ship_name,"_inclusive,",ship_name,"_null)",sep = "")))
+  eval(parse(text = paste(ship_name,"_inclusive <- expand.grid(",
+                            "column = (min(",ship_name,"$column) - 1):(max(",ship_name,"$column) + 1),",
+                            "row = (min(",ship_name,"$row) - 1):(max(",ship_name,"$row) + 1))",
+                          sep = ""
+                          )))
+  eval(parse(text = paste(ship_name,"_null <- expand.grid(",
+                            "column = c(min(",ship_name,"_inclusive$column),max(",ship_name,"_inclusive$column)),",
+                            "row = c(min(",ship_name,"_inclusive$row),max(",ship_name,"_inclusive$row)))",
+                          sep = ""
+                          )))
+  eval(parse(text = paste(ship_name,"_red <- anti_join(",
+                            ship_name,"_inclusive,",
+                            ship_name,"_null)",
+                          sep = ""
+                          )))
   return(as.data.frame(eval(parse(text = paste(ship_name,"_red <- anti_join(",ship_name,"_inclusive,",ship_name,"_null)",sep = "")))))
 }
 
 carrier_red <- red_zone(carrier)
 
-#Now for while loop
-while(any((battleship$column %in% carrier_red$column)&(battleship$row %in% carrier_red$row)) {
-  battleship <- battleship_fun(sample(1:1000))
-}
+#Now create battleship redzone (including the carrier red zone as well)
+battleship_red <- red_zone(battleship) %>% 
+  rbind(carrier_red)
+
 #Now what? Put the new ship on the original board
 board_2_5 <- board_1_5
 board_2_5[unique(battleship$row),unique(battleship$column)] <- "B"
@@ -193,20 +171,6 @@ sub_fun <- function(x = sample(1:1000)) {
   
 }
 submarine <- sub_fun()
+
+
 cruiser <- sub_fun()
-
-bs_col_inclusive <- seq(min(battleship$column) - 1, max(battleship$column) + 1)
-bs_col_exclusive <- seq(min(battleship$column),max(battleship$column))
-bs_row_inclusive <- seq(min(battleship$row) - 1, max(battleship$row) + 1)
-bs_row_exclusive <- seq(min(battleship$row),max(battleship$row))
-
-
-while (any((
-  (submarine$column %in% carrier_col_inclusive) & 
-  (submarine$row %in% carrier_row_exclusive)
-)|
-(battleship$column %in% carrier_col_exclusive) &
-(battleship$row %in% carrier_row_inclusive)
-)) {
-  battleship <- battleship_fun(sample(1:1000))
-}
