@@ -1,11 +1,14 @@
 library(pacman)
 p_load(tidyverse)
 
+#Start by creating empty board from a matrix
 board <- data.frame(matrix("~", nrow = 10, ncol = 10))
 colnames(board) <- seq.int(1,10)
 rownames(board) <- LETTERS[seq.int(1,10)]
 board
 
+### CARRIER FUNCTION
+#creates position df for ship its named after
 carrier_fun <- function(){
   #orientation determines the direction of a ship's placement
   orientation <- unlist(sample(c('horizontal','vertical'),1))
@@ -119,15 +122,17 @@ battleship_fun <- function(x = sample(1:1000)) {
 }
 battleship <- battleship_fun()
 
+#while statement for valid positioning 
 while(any(do.call(paste,battleship[,1:2]) %in% do.call(paste,carrier_red))) {
   battleship <- battleship_fun(sample(1:1000))
 }
 
-#Now create battleship redzone (including the carrier red zone as well)
+#Battleship redzone (including the carrier red zone as well)
 battleship_red <- red_zone(battleship) %>% 
   rbind(carrier_red)
 
 
+###SUB FUNCTION 
 sub_fun <- function(x = sample(1:1000)) {
   seed <- sample(x)
   set.seed(seed)
@@ -174,24 +179,30 @@ sub_fun <- function(x = sample(1:1000)) {
 }
 submarine <- sub_fun()
 
+#valid positioning sub
 while(any(do.call(paste,submarine[,1:2]) %in% do.call(paste,battleship_red))) {
   submarine <- sub_fun(sample(1:1000))
 }
 
+#sub redzone
 sub_red <- red_zone(submarine) %>% 
   rbind(battleship_red)
 
+#cruiser has same size as sub (3), so we just use the sub function again
 cruiser <- sub_fun() %>%
   mutate(ship = "cruiser")
 
+#valid positioning cruiser
 while(any(do.call(paste,cruiser[,1:2]) %in% do.call(paste,sub_red))) {
   cruiser <- sub_fun(sample(1:1000)) %>%
     mutate(ship = "cruiser")
 }
 
+#cruiser redzone
 cruiser_red <- red_zone(cruiser) %>%
   rbind(sub_red)
 
+###DESTROYER FUNCTION
 des_fun <- function(x = sample(1:1000)) {
   seed <- sample(x)
   set.seed(seed)
@@ -238,10 +249,15 @@ des_fun <- function(x = sample(1:1000)) {
 
 destroyer <- des_fun()
 
+#valid positioning destroyer
 while(any(do.call(paste,destroyer[,1:2]) %in% do.call(paste,cruiser_red))) {
   destroyer <- des_fun(sample(1:1000))
 }
+
+#final ship position df
 ships <- rbind(carrier,battleship,submarine,cruiser,destroyer)
+
+#create the board with ships on it
 final_board <- board
 for (i in 1:17) {
   final_board[ships$row[i],ships$column[i]] <- ifelse(ships$ship[i] == "cruiser",
