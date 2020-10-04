@@ -268,3 +268,35 @@ for (i in 1:17) {
 }
 
 final_board
+
+#Now lets feel out the process of the computer playing the game
+#Lets start with random guesses, no constraints
+#Let's do a guess function
+single_guess <- function(final_board) {
+  pos <- sample(1:10,2,replace = TRUE)
+  
+  while (grepl("O|X",final_board[pos[1],pos[2]])) {
+    pos <- sample(1:10,2,replace = TRUE)
+  } 
+  final_board[pos[1],pos[2]] <- ifelse(
+     grepl("C|B|S|R|D|X",final_board[pos[1],pos[2]]),
+    "X",
+    "O"
+    )
+  return(final_board)
+}
+
+single_guess(final_board)
+boards <- list(final_board)
+turn <- 0
+
+while (any(grepl("C|B|S|R|D",final_board))) {
+  final_board <- single_guess(final_board)
+  turn <- turn + 1
+  append(boards,final_board)
+}
+turn
+final_board
+boards
+#We have a function that will progress the game, and create a new board!
+#However, we cannot seem to stop it from guessing the same place
