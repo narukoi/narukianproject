@@ -1,5 +1,5 @@
 library(pacman)
-p_load(tidyverse)
+p_load(tidyverse,gganimate)
 
 #Start by creating empty board from a matrix
 board <- data.frame(matrix("~", nrow = 10, ncol = 10))
@@ -45,9 +45,9 @@ carrier_fun <- function(){
       row = change_pos,
       combination = paste(LETTERS[change_pos],static_pos,sep = "")
     )}
- return(carrier_positions %>%
-          mutate(ship = "carrier")
-        )
+  return(carrier_positions %>%
+           mutate(ship = "carrier")
+  )
 }
 carrier <- carrier_fun()
 
@@ -117,7 +117,7 @@ battleship_fun <- function(x = sample(1:1000)) {
   
   return(battleship_positions %>%
            mutate(ship = "battleship")
-         )
+  )
   
 }
 battleship <- battleship_fun()
@@ -174,7 +174,7 @@ sub_fun <- function(x = sample(1:1000)) {
   
   return(sub_positions %>%
            mutate(ship = "submarine")
-         )
+  )
   
 }
 submarine <- sub_fun()
@@ -244,7 +244,7 @@ des_fun <- function(x = sample(1:1000)) {
   
   return(des_positions %>%
            mutate(ship = "destroyer")
-         )
+  )
 }
 
 destroyer <- des_fun()
@@ -264,7 +264,7 @@ for (i in 1:17) {
                                                       "R",
                                                       ships$ship[i] %>% 
                                                         substr(1,1) %>% toupper()
-                                                      )
+  )
 }
 
 final_board
@@ -279,10 +279,10 @@ single_guess <- function(final_board) {
     pos <- sample(1:10,2,replace = TRUE)
   } 
   final_board[pos[1],pos[2]] <- ifelse(
-     grepl("C|B|S|R|D",final_board[pos[1],pos[2]]),
+    grepl("C|B|S|R|D",final_board[pos[1],pos[2]]),
     "X",
     "O"
-    )
+  )
   return(final_board)
 }
 
@@ -298,9 +298,26 @@ while (any(grepl("C|B|S|R|D",final_board))) {
 turn
 final_board
 boards
-#now we have turn, which will end up giving us how many turns it takes to win a game
-#we also have boards: the dataframes for the board at each turn
-#we can take this three ways: 
-#1. We create individual game simulations capable of repeating to test different guessing methodologies
-#2. An individual game displayed through animation
-#3. a game capable of being played by two people
+
+final_df <- expand.grid(
+  row = LETTERS[1:10],
+  column = 1:10
+) %>%
+  mutate(
+    obs = final_board %>% unlist()  
+  )
+
+final_df %>% 
+  ggplot() +
+  geom_text(mapping = aes(
+    x = column,
+    y = row,
+    label = obs
+  )) +
+  scale_y_discrete(limits = LETTERS[10:1]) +
+  scale_x_discrete(limits = 1:10,position = "top") +
+  ggtitle(label = paste("Turn", turn)) +
+  theme(
+    plot.title = element_text(hjust =.5),
+    axis.title = element_blank()
+    )
