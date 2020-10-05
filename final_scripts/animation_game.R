@@ -269,6 +269,18 @@ for (i in 1:17) {
 
 final_board
 
+#set turn counter
+turn <- 0
+final_df <- expand.grid(
+  row = LETTERS[1:10],
+  column = 1:10
+) %>%
+  mutate(
+    obs = final_board %>% unlist(),
+    turn = turn
+  )
+
+
 #Now lets feel out the process of the computer playing the game
 #Lets start with random guesses, no constraints
 #Let's do a guess function
@@ -286,28 +298,27 @@ single_guess <- function(final_board) {
   return(final_board)
 }
 
-single_guess(final_board)
-boards <- list(final_board)
-turn <- 0
-
+#while loop to create a board for all guesses until win condition
 while (any(grepl("C|B|S|R|D",final_board))) {
   final_board <- single_guess(final_board)
   turn <- turn + 1
-  eval(parse(text = paste("boards$turn",turn," <- final_board",sep = "")))
+  turn_df <- expand.grid(
+    row = LETTERS[1:10],
+    column = 1:10
+  ) %>%
+    mutate(
+      obs = final_board %>% unlist(),
+      turn = turn
+    )
+  final_df <- rbind(final_df,turn_df)
 }
 turn
 final_board
 boards
 
-final_df <- expand.grid(
-  row = LETTERS[1:10],
-  column = 1:10
-) %>%
-  mutate(
-    obs = final_board %>% unlist()  
-  )
 
-final_df %>% 
+#animation of single game
+final_animation <- final_df %>% 
   ggplot() +
   geom_text(mapping = aes(
     x = column,
@@ -316,8 +327,15 @@ final_df %>%
   )) +
   scale_y_discrete(limits = LETTERS[10:1]) +
   scale_x_discrete(limits = 1:10,position = "top") +
-  ggtitle(label = paste("Turn", turn)) +
+  labs(caption = ) +
+  ggtitle(
+    label = 'Turn {closest_state}',
+    subtitle = paste('Win on turn: ',turn, sep = "")
+    ) +
   theme(
     plot.title = element_text(hjust =.5),
     axis.title = element_blank()
-    )
+    ) +
+  transition_states(turn)
+
+animate(final_animation,nframes = 200,fps = 5)
