@@ -332,7 +332,7 @@ final_animation <- final_df %>%
       y = ifelse(row>5,5-(row-6),5+(6-row)), 
       fill = toupper(ship)
       ),
-    alpha = .2
+    alpha = .5
     ) + 
   scale_y_discrete(limits = LETTERS[10:1]) +
   scale_x_discrete(limits = 1:10,position = "top") +
@@ -344,6 +344,7 @@ final_animation <- final_df %>%
     plot.title = element_text(hjust =.5),
     axis.title = element_blank()
     )  +
+  labs(fill = "SHIP") +
   transition_states(turn)
 
 animate(final_animation,nframes = 200,fps = 5)
