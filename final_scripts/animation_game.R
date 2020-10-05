@@ -325,9 +325,17 @@ final_animation <- final_df %>%
     y = row,
     label = obs
   )) +
+  geom_tile(
+    data = ships,
+    aes(
+      x = column,
+      y = ifelse(row>5,5-(row-6),5+(6-row)), 
+      fill = toupper(ship)
+      ),
+    alpha = .2
+    ) + 
   scale_y_discrete(limits = LETTERS[10:1]) +
   scale_x_discrete(limits = 1:10,position = "top") +
-  labs(caption = ) +
   ggtitle(
     label = 'Turn {closest_state}',
     subtitle = paste('Win on turn: ',turn, sep = "")
@@ -335,7 +343,8 @@ final_animation <- final_df %>%
   theme(
     plot.title = element_text(hjust =.5),
     axis.title = element_blank()
-    ) +
+    )  +
   transition_states(turn)
 
 animate(final_animation,nframes = 200,fps = 5)
+animate(final_animation,nframes = 10,fps = 5)
